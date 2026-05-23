@@ -28,6 +28,9 @@ vscode-extension/out/
 # Report (not tracked in git)
 report/
 
+# Project snapshots (local only)
+SNAPSHOT.md
+
 # OS
 .DS_Store
 Thumbs.db
