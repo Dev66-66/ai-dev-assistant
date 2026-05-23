@@ -1,5 +1,4 @@
 import os
-import pytest
 
 # Set dummy env vars before any app module is imported.
 # This prevents pydantic-settings from raising ValidationError
