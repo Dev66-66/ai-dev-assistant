@@ -1,0 +1,35 @@
+{
+  "name": "ai-dev-assistant",
+  "displayName": "AI Dev Assistant",
+  "description": "AI-powered code completion, test and doc generation via Gemini",
+  "version": "0.1.0",
+  "engines": { "vscode": "^1.95.0" },
+  "categories": ["Other"],
+  "activationEvents": ["onLanguage:python"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "aiDevAssistant.generateTests",
+        "title": "AI: Generate Tests"
+      },
+      {
+        "command": "aiDevAssistant.generateDocs",
+        "title": "AI: Generate Docstring"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.95.0",
+    "typescript": "^5.7.2"
+  }
+}
