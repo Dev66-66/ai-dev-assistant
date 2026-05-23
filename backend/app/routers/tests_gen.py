@@ -29,8 +29,6 @@ Tests:"""
 
 @router.post("/", response_model=TestGenResponse)
 async def generate_tests(req: TestGenRequest) -> TestGenResponse:
-    prompt = PROMPT_TEMPLATE.format(
-        language=req.language, framework=req.framework, code=req.code
-    )
+    prompt = PROMPT_TEMPLATE.format(language=req.language, framework=req.framework, code=req.code)
     tests = await gemini.generate(prompt)
     return TestGenResponse(tests=tests.strip())
