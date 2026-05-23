@@ -1,0 +1,20 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  lsp_server:
+    build: ./lsp_server
+    ports:
+      - "${LSP_PORT:-2087}:2087"
+    env_file: .env
+    depends_on:
+      backend:
+        condition: service_healthy
