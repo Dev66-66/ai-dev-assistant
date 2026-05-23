@@ -1,6 +1,6 @@
 import os
+
 import httpx
-from pygls.server import LanguageServer
 from lsprotocol.types import (
     TEXT_DOCUMENT_COMPLETION,
     CompletionItem,
@@ -8,6 +8,7 @@ from lsprotocol.types import (
     CompletionList,
     CompletionParams,
 )
+from pygls.server import LanguageServer
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000")
 

@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
+
 from app.services import gemini
 
 router = APIRouter(prefix="/docs", tags=["docs"])

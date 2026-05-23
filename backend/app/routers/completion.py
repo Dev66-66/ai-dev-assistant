@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+
 from app.services import gemini
 
 router = APIRouter(prefix="/completion", tags=["completion"])
