@@ -34,6 +34,7 @@ async def test_completions_returns_list(mock_ls, completion_params):
         mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
         from server import completions
+
         result = await completions(mock_ls, completion_params)
 
     assert result is not None
@@ -49,6 +50,7 @@ async def test_completions_on_backend_error(mock_ls, completion_params):
         mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
         from server import completions
+
         result = await completions(mock_ls, completion_params)
 
     assert result.items == []

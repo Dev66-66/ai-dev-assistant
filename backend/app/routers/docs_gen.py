@@ -28,8 +28,6 @@ Docstring:"""
 
 @router.post("/", response_model=DocsGenResponse)
 async def generate_docs(req: DocsGenRequest) -> DocsGenResponse:
-    prompt = PROMPT_TEMPLATE.format(
-        language=req.language, style=req.style, code=req.code
-    )
+    prompt = PROMPT_TEMPLATE.format(language=req.language, style=req.style, code=req.code)
     docstring = await gemini.generate(prompt)
     return DocsGenResponse(docstring=docstring.strip())
