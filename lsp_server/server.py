@@ -47,6 +47,6 @@ async def completions(ls: LanguageServer, params: CompletionParams) -> Completio
 
 
 if __name__ == "__main__":
-    host = os.getenv("LSP_HOST", "0.0.0.0")
+    host = os.getenv("LSP_HOST", "0.0.0.0")  # nosec B104 — intentional: container must bind all interfaces
     port = int(os.getenv("LSP_PORT", "2087"))
     server.start_tcp(host, port)
