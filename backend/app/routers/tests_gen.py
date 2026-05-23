@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from app.services.gemini import generate
+from app.services import gemini
 
 router = APIRouter(prefix="/tests", tags=["tests"])
 
@@ -31,5 +31,5 @@ async def generate_tests(req: TestGenRequest) -> TestGenResponse:
     prompt = PROMPT_TEMPLATE.format(
         language=req.language, framework=req.framework, code=req.code
     )
-    tests = await generate(prompt)
+    tests = await gemini.generate(prompt)
     return TestGenResponse(tests=tests.strip())
