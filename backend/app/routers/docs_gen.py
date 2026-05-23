@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from app.services.gemini import generate
+from app.services import gemini
 
 router = APIRouter(prefix="/docs", tags=["docs"])
 
@@ -30,5 +30,5 @@ async def generate_docs(req: DocsGenRequest) -> DocsGenResponse:
     prompt = PROMPT_TEMPLATE.format(
         language=req.language, style=req.style, code=req.code
     )
-    docstring = await generate(prompt)
+    docstring = await gemini.generate(prompt)
     return DocsGenResponse(docstring=docstring.strip())

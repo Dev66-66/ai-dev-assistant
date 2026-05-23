@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from app.services.gemini import generate, generate_stream
+from app.services import gemini
 
 router = APIRouter(prefix="/completion", tags=["completion"])
 
@@ -33,9 +33,9 @@ async def get_completion(req: CompletionRequest):
 
     if req.stream:
         return StreamingResponse(
-            generate_stream(prompt),
+            gemini.generate_stream(prompt),
             media_type="text/plain",
         )
 
-    suggestion = await generate(prompt)
+    suggestion = await gemini.generate(prompt)
     return CompletionResponse(suggestion=suggestion.strip())
