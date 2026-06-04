@@ -23,6 +23,11 @@ async function generateTests(): Promise<void> {
     { location: vscode.ProgressLocation.Notification, title: "Generating tests..." },
     async () => {
       const resp = await postJson("/tests/", { code, language: "python" });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ detail: "Unknown error" })) as { detail?: string };
+        vscode.window.showErrorMessage(`AI Dev Assistant: ${err.detail ?? resp.statusText}`);
+        return;
+      }
       const data = (await resp.json()) as { tests: string };
 
       const doc = await vscode.workspace.openTextDocument({
@@ -50,6 +55,11 @@ async function generateDocs(): Promise<void> {
     { location: vscode.ProgressLocation.Notification, title: "Generating docstring..." },
     async () => {
       const resp = await postJson("/docs/", { code, language: "python" });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ detail: "Unknown error" })) as { detail?: string };
+        vscode.window.showErrorMessage(`AI Dev Assistant: ${err.detail ?? resp.statusText}`);
+        return;
+      }
       const data = (await resp.json()) as { docstring: string };
       const docstring = `"""\n${data.docstring}\n"""`;
 
