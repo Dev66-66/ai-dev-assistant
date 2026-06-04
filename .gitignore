@@ -22,7 +22,6 @@ htmlcov/
 # Node / VS Code Extension
 node_modules/
 out/
-*.vsix
 vscode-extension/out/
 
 # Report (not tracked in git)
