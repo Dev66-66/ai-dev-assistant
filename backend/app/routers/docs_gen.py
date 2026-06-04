@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.services import gemini
@@ -29,5 +29,8 @@ Docstring:"""
 @router.post("/", response_model=DocsGenResponse)
 async def generate_docs(req: DocsGenRequest) -> DocsGenResponse:
     prompt = PROMPT_TEMPLATE.format(language=req.language, style=req.style, code=req.code)
-    docstring = await gemini.generate(prompt)
+    try:
+        docstring = await gemini.generate(prompt)
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=str(e))
     return DocsGenResponse(docstring=docstring.strip())

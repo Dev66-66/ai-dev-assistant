@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.services import gemini
@@ -30,5 +30,8 @@ Tests:"""
 @router.post("/", response_model=TestGenResponse)
 async def generate_tests(req: TestGenRequest) -> TestGenResponse:
     prompt = PROMPT_TEMPLATE.format(language=req.language, framework=req.framework, code=req.code)
-    tests = await gemini.generate(prompt)
+    try:
+        tests = await gemini.generate(prompt)
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=str(e))
     return TestGenResponse(tests=tests.strip())

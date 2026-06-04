@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -38,5 +38,8 @@ async def get_completion(req: CompletionRequest):
             media_type="text/plain",
         )
 
-    suggestion = await gemini.generate(prompt)
+    try:
+        suggestion = await gemini.generate(prompt)
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=str(e))
     return CompletionResponse(suggestion=suggestion.strip())
