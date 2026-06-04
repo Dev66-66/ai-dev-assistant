@@ -11,13 +11,29 @@
     "commands": [
       {
         "command": "aiDevAssistant.generateTests",
-        "title": "AI: Generate Tests"
+        "title": "AI: Generate Tests",
+        "icon": "$(beaker)"
       },
       {
         "command": "aiDevAssistant.generateDocs",
-        "title": "AI: Generate Docstring"
+        "title": "AI: Generate Docstring",
+        "icon": "$(book)"
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "aiDevAssistant.generateTests",
+          "when": "resourceLangId == python",
+          "group": "navigation"
+        },
+        {
+          "command": "aiDevAssistant.generateDocs",
+          "when": "resourceLangId == python",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "compile": "tsc -p ./",
