@@ -34,6 +34,24 @@ FastAPI Backend (Python)        ←── Web UI (/)
 | Контейнеризация | Docker, Docker Compose |
 | Качество кода | ruff, bandit, pytest-cov |
 
+## Установка VS Code расширения
+
+В репозитории есть готовый файл `vscode-extension/ai-dev-assistant-0.1.0.vsix` — это собранное расширение для VS Code, которое не требует компиляции.
+
+**Установка:**
+
+1. Скачать репозиторий (или только файл `.vsix`)
+2. Открыть VS Code → `Extensions` (Ctrl+Shift+X)
+3. Нажать `...` → `Install from VSIX...`
+4. Выбрать файл `vscode-extension/ai-dev-assistant-0.1.0.vsix`
+5. Перезагрузить окно (`Ctrl+Shift+P` → `Developer: Reload Window`)
+
+После установки при открытии любого `.py` файла:
+- В правом верхнем углу редактора появятся кнопки **⚗ Generate Tests** и **📖 Generate Docstring**
+- При наборе кода через ~1.5 секунды появляется AI-подсказка серым текстом — принять через **Tab**
+
+> Расширение требует запущенного бэкенда (`docker compose up`)
+
 ## Быстрый старт
 
 ```bash
