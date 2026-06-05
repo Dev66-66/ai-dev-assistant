@@ -27,8 +27,9 @@ vscode-extension/out/
 # Report (not tracked in git)
 report/
 
-# Project snapshots (local only)
+# Project snapshots and local docs (local only)
 SNAPSHOT.md
+TESTS.md
 
 # OS
 .DS_Store

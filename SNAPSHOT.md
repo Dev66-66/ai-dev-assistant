@@ -1,8 +1,8 @@
-# Снимок состояния проекта #8
+# Снимок состояния проекта #9
 **Дата:** 2026-06-05
 **Репозиторий:** https://github.com/Dev66-66/ai-dev-assistant
 **Ветка:** master
-**Последний коммит:** `0194017 perf(completion): use smaller model and limit max_tokens for speed`
+**Последний коммит:** `8286e7e docs: add TESTS.md with description of all tests`
 
 ## Полный список выполненного
 
@@ -21,6 +21,8 @@
 - [x] Поддержка Ollama — локальный запуск моделей, переключение через `LLM_PROVIDER` в `.env`
 - [x] Постобработка ответов LLM — `_strip_fences()` во всех трёх роутерах
 - [x] Оптимизация autocomplete — `qwen2.5-coder:1.5b` + `max_tokens=80` для скорости
+- [x] История git очищена от сторонних подписей в коммитах
+- [x] TESTS.md — локальное описание всех 9 тестов (gitignored)
 
 ## Исправленные баги CI
 
@@ -48,6 +50,15 @@
 | `OLLAMA_MODEL` | `qwen2.5-coder:7b` | Генерация тестов и документации |
 | `OLLAMA_COMPLETION_MODEL` | `qwen2.5-coder:1.5b` | Inline autocomplete (быстрый) |
 | `OPENROUTER_MODEL` | `google/gemma-4-31b-it:free` | Резерв при `LLM_PROVIDER=openrouter` |
+
+## Локальные файлы (gitignored)
+
+| Файл | Описание |
+|---|---|
+| `SNAPSHOT.md` | Этот файл |
+| `TESTS.md` | Описание всех тестов — что проверяют и как работают |
+| `report/` | Отчёт, docx, перечень правок |
+| `.env` | Реальные ключи и конфигурация |
 
 ## Структура проекта
 
