@@ -16,10 +16,11 @@ else:
     _model = settings.openrouter_model
 
 
-async def generate(prompt: str) -> str:
+async def generate(prompt: str, max_tokens: int | None = None, model: str | None = None) -> str:
     response = await _client.chat.completions.create(
-        model=_model,
+        model=model or _model,
         messages=[{"role": "user", "content": prompt}],
+        **({"max_tokens": max_tokens} if max_tokens is not None else {}),
     )
     return response.choices[0].message.content
 

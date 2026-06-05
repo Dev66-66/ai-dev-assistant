@@ -2,9 +2,12 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from app.config import settings
 from app.services import gemini
 
 router = APIRouter(prefix="/completion", tags=["completion"])
+
+_completion_model = settings.ollama_completion_model if settings.llm_provider == "ollama" else None
 
 
 class CompletionRequest(BaseModel):
@@ -48,7 +51,7 @@ async def get_completion(req: CompletionRequest):
         )
 
     try:
-        suggestion = await gemini.generate(prompt)
+        suggestion = await gemini.generate(prompt, max_tokens=80, model=_completion_model)
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
     return CompletionResponse(suggestion=_strip_fences(suggestion))
