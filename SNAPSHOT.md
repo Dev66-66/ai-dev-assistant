@@ -1,8 +1,8 @@
-# Снимок состояния проекта #7
+# Снимок состояния проекта #8
 **Дата:** 2026-06-05
 **Репозиторий:** https://github.com/Dev66-66/ai-dev-assistant
 **Ветка:** master
-**Последний коммит:** `da2d827 feat(backend): add Ollama support as local LLM provider`
+**Последний коммит:** `0194017 perf(completion): use smaller model and limit max_tokens for speed`
 
 ## Полный список выполненного
 
@@ -19,6 +19,9 @@
 - [x] report.docx сконвертирован
 - [x] Миграция с Gemini API на OpenRouter (openai SDK, модель `google/gemma-4-31b-it:free`)
 - [x] Поддержка Ollama — локальный запуск моделей, переключение через `LLM_PROVIDER` в `.env`
+- [x] Постобработка ответов LLM — `_strip_fences()` во всех трёх роутерах
+- [x] Оптимизация autocomplete — `qwen2.5-coder:1.5b` + `max_tokens=80` для скорости
+- [x] report_changes.md — перечень правок в отчёте под текущее состояние проекта
 
 ## Исправленные баги CI
 
@@ -38,6 +41,15 @@
 | 2026-06-05 | OpenRouter (`google/gemma-4-31b-it:free`) | Превышение квоты Gemini free tier |
 | 2026-06-05 | Ollama (`qwen2.5-coder:7b`) + OpenRouter | Требование ТЗ: локальный запуск для конфиденциальности |
 
+## Конфигурация LLM (текущая)
+
+| Параметр | Значение | Назначение |
+|---|---|---|
+| `LLM_PROVIDER` | `ollama` | Активный провайдер |
+| `OLLAMA_MODEL` | `qwen2.5-coder:7b` | Генерация тестов и документации |
+| `OLLAMA_COMPLETION_MODEL` | `qwen2.5-coder:1.5b` | Inline autocomplete (быстрый) |
+| `OPENROUTER_MODEL` | `google/gemma-4-31b-it:free` | Резерв при `LLM_PROVIDER=openrouter` |
+
 ## Структура проекта
 
 ```
@@ -52,7 +64,7 @@ D:\ai-dev-assistant\
 │   │   ├── main.py              # FastAPI + статика
 │   │   ├── config.py            # Pydantic Settings (LLM_PROVIDER + оба провайдера)
 │   │   ├── static/index.html    # Web UI
-│   │   ├── routers/             # completion, tests_gen, docs_gen
+│   │   ├── routers/             # completion, tests_gen, docs_gen (все со _strip_fences)
 │   │   └── services/gemini.py   # LLM клиент: OpenRouter или Ollama (openai SDK)
 │   ├── tests/
 │   │   ├── conftest.py          # env stub для локального запуска
@@ -75,7 +87,8 @@ D:\ai-dev-assistant\
 │   ├── package.json
 │   └── tsconfig.json
 └── report/
-    ├── report.md                 # полный отчёт (gitignored)
+    ├── report_fomichev.md        # полный отчёт (gitignored)
+    ├── report_changes.md         # перечень правок в отчёте
     └── report.docx               # сконвертированный Word (gitignored)
 ```
 
@@ -83,9 +96,12 @@ D:\ai-dev-assistant\
 
 - [ ] Redis кэш ответов
 - [ ] RAG по кодовой базе проекта
+- [ ] Обновить report_fomichev.md согласно report_changes.md
 
 ## Как возобновить работу
 
 1. Прочитать этот файл
 2. `git log --oneline` — проверить актуальный коммит
-3. Продолжить с раздела "Что осталось"
+3. Запустить Ollama: `ollama serve` (если не запущена)
+4. Запустить Docker: `docker compose up -d`
+5. Продолжить с раздела "Что осталось"
