@@ -2,15 +2,23 @@ from openai import AsyncOpenAI
 
 from app.config import settings
 
-_client = AsyncOpenAI(
-    api_key=settings.openrouter_api_key,
-    base_url="https://openrouter.ai/api/v1",
-)
+if settings.llm_provider == "ollama":
+    _client = AsyncOpenAI(
+        api_key="ollama",
+        base_url=settings.ollama_base_url,
+    )
+    _model = settings.ollama_model
+else:
+    _client = AsyncOpenAI(
+        api_key=settings.openrouter_api_key,
+        base_url="https://openrouter.ai/api/v1",
+    )
+    _model = settings.openrouter_model
 
 
 async def generate(prompt: str) -> str:
     response = await _client.chat.completions.create(
-        model=settings.openrouter_model,
+        model=_model,
         messages=[{"role": "user", "content": prompt}],
     )
     return response.choices[0].message.content
@@ -18,7 +26,7 @@ async def generate(prompt: str) -> str:
 
 async def generate_stream(prompt: str):
     stream = await _client.chat.completions.create(
-        model=settings.openrouter_model,
+        model=_model,
         messages=[{"role": "user", "content": prompt}],
         stream=True,
     )
