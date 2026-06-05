@@ -2,8 +2,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    gemini_api_key: str
-    gemini_model: str = "gemini-2.0-flash"
+    openrouter_api_key: str
+    openrouter_model: str = "google/gemma-4-31b-it:free"
     backend_host: str = "0.0.0.0"  # nosec B104 — intentional: container must bind all interfaces
     backend_port: int = 8000
 
