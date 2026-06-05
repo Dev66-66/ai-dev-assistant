@@ -7,9 +7,9 @@
 | Python | 3.12+ | `python --version` |
 | Node.js | 20+ | `node --version` |
 | Docker Desktop | любая | `docker --version` |
-| Gemini API ключ | — | [aistudio.google.com](https://aistudio.google.com) |
+| OpenRouter API ключ | — | [openrouter.ai/keys](https://openrouter.ai/keys) |
 
-> **Gemini API ключ:** зайди на https://aistudio.google.com → Get API key → скопируй.
+> **OpenRouter API ключ:** зайди на https://openrouter.ai/keys → Create Key → скопируй.
 
 ---
 
@@ -23,11 +23,13 @@ copy .env.example .env
 Открой `.env` и вставь ключ:
 
 ```
-GEMINI_API_KEY=AIza_твой_ключ_здесь
-GEMINI_MODEL=gemini-2.0-flash
+OPENROUTER_API_KEY=sk-or-v1-твой_ключ_здесь
+OPENROUTER_MODEL=google/gemma-4-31b-it:free
 BACKEND_PORT=8000
 LSP_PORT=2087
 ```
+
+> Модель можно сменить на любую из [openrouter.ai/models](https://openrouter.ai/models), например `google/gemini-2.5-flash`.
 
 ---
 
@@ -60,8 +62,8 @@ docker compose down
 cd D:\ai-dev-assistant\backend
 pip install -r requirements.txt
 
-$env:GEMINI_API_KEY="AIza_твой_ключ"
-$env:GEMINI_MODEL="gemini-2.0-flash"
+$env:OPENROUTER_API_KEY="sk-or-v1-твой_ключ"
+$env:OPENROUTER_MODEL="google/gemma-4-31b-it:free"
 
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
@@ -157,7 +159,7 @@ pytest tests/ -v
 
 | Проблема | Решение |
 |---|---|
-| `GEMINI_API_KEY` не задан | Проверь `.env` файл, он должен быть рядом с `docker-compose.yml` |
+| `OPENROUTER_API_KEY` не задан | Проверь `.env` файл, он должен быть рядом с `docker-compose.yml` |
 | Порт 8000 занят | Измени `BACKEND_PORT=8001` в `.env` |
 | LSP не подключается | Убедись что backend запущен раньше LSP server |
 | Extension не видит команды | Убедись что в Extension Development Host открыт `.py` файл |
