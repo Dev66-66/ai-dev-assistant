@@ -10,6 +10,7 @@ AI-ассистент для разработчика с интеграцией 
 - **Генерация тестов** — автоматическое создание pytest-тестов
 - **Генерация документации** — docstring для функций и классов
 - **Web UI** — браузерный интерфейс для быстрого тестирования без IDE
+- **Локальный запуск** — поддержка Ollama для полной конфиденциальности кода
 
 ## Архитектура
 
@@ -20,7 +21,7 @@ LSP Server (Python + pygls)
         │ HTTP/REST
 FastAPI Backend (Python)        ←── Web UI (/)
         │
-  OpenRouter API
+  OpenRouter API  ──или──  Ollama (локально)
 ```
 
 ## Стек технологий
@@ -28,7 +29,8 @@ FastAPI Backend (Python)        ←── Web UI (/)
 | Компонент | Технологии |
 |-----------|-----------|
 | Backend | Python 3.12, FastAPI, Pydantic V2 |
-| LLM | [OpenRouter](https://openrouter.ai) (`google/gemma-4-31b-it:free` по умолчанию) |
+| LLM (облако) | [OpenRouter](https://openrouter.ai) (`google/gemma-4-31b-it:free` по умолчанию) |
+| LLM (локально) | [Ollama](https://ollama.com) (`qwen2.5-coder:7b` по умолчанию) |
 | LSP Server | Python, pygls 1.3.1 |
 | VS Code Extension | TypeScript, vscode-languageclient 9 |
 | Контейнеризация | Docker, Docker Compose |
@@ -54,6 +56,8 @@ FastAPI Backend (Python)        ←── Web UI (/)
 
 ## Быстрый старт
 
+### Вариант А — OpenRouter (облако)
+
 ```bash
 # 1. Клонировать репозиторий
 git clone https://github.com/Dev66-66/ai-dev-assistant.git
@@ -62,8 +66,26 @@ cd ai-dev-assistant
 # 2. Настроить переменные окружения
 cp .env.example .env
 # Вставить OPENROUTER_API_KEY в .env  (получить на https://openrouter.ai/keys)
+# Убедиться: LLM_PROVIDER=openrouter
 
 # 3. Запустить через Docker Compose
+docker compose up --build
+```
+
+### Вариант Б — Ollama (локально, без передачи кода в облако)
+
+```bash
+# 1. Установить Ollama: https://ollama.com/download
+# 2. Скачать модель
+ollama pull qwen2.5-coder:7b
+
+# 3. Клонировать и настроить
+git clone https://github.com/Dev66-66/ai-dev-assistant.git
+cd ai-dev-assistant
+cp .env.example .env
+# Установить в .env: LLM_PROVIDER=ollama
+
+# 4. Запустить
 docker compose up --build
 ```
 
@@ -95,7 +117,7 @@ npm run compile
 
 ```
 ai-dev-assistant/
-├── backend/            # FastAPI + OpenRouter сервис
+├── backend/            # FastAPI + LLM сервис (OpenRouter / Ollama)
 ├── lsp_server/         # Language Server (pygls)
 ├── vscode-extension/   # VS Code расширение (TypeScript)
 └── .github/workflows/  # CI/CD pipeline
@@ -106,4 +128,4 @@ ai-dev-assistant/
 - Python 3.12+
 - Node.js 20+
 - Docker & Docker Compose
-- OpenRouter API ключ ([openrouter.ai/keys](https://openrouter.ai/keys))
+- OpenRouter API ключ ([openrouter.ai/keys](https://openrouter.ai/keys)) **или** [Ollama](https://ollama.com/download)

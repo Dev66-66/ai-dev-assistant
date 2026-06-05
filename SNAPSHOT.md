@@ -1,13 +1,13 @@
-# Снимок состояния проекта #6
+# Снимок состояния проекта #7
 **Дата:** 2026-06-05
 **Репозиторий:** https://github.com/Dev66-66/ai-dev-assistant
 **Ветка:** master
-**Последний коммит:** `b89fba1 docs: update LAUNCH.md to reflect OpenRouter migration`
+**Последний коммит:** `da2d827 feat(backend): add Ollama support as local LLM provider`
 
 ## Полный список выполненного
 
 - [x] Scaffold + docker-compose + .env.example
-- [x] Backend: FastAPI + OpenRouter API, 3 эндпоинта + стриминг + Web UI (GET /)
+- [x] Backend: FastAPI, 3 эндпоинта + стриминг + Web UI (GET /)
 - [x] LSP Server: pygls, TCP 2087, Dockerfile
 - [x] VS Code Extension: TypeScript, LSP клиент, 2 команды
 - [x] CI/CD: lint + test(coverage 90%) + test-lsp + SAST — все джобы зелёные
@@ -18,6 +18,7 @@
 - [x] Отчёт: полный, разделы 1–5 + Заключение + Литература + Приложения
 - [x] report.docx сконвертирован
 - [x] Миграция с Gemini API на OpenRouter (openai SDK, модель `google/gemma-4-31b-it:free`)
+- [x] Поддержка Ollama — локальный запуск моделей, переключение через `LLM_PROVIDER` в `.env`
 
 ## Исправленные баги CI
 
@@ -31,10 +32,11 @@
 
 ## История миграции провайдера
 
-| Дата | Провайдер | Причина смены |
+| Дата | Провайдер | Причина |
 |---|---|---|
 | до 2026-06-05 | Google Gemini API (прямой) | — |
 | 2026-06-05 | OpenRouter (`google/gemma-4-31b-it:free`) | Превышение квоты Gemini free tier |
+| 2026-06-05 | Ollama (`qwen2.5-coder:7b`) + OpenRouter | Требование ТЗ: локальный запуск для конфиденциальности |
 
 ## Структура проекта
 
@@ -48,10 +50,10 @@ D:\ai-dev-assistant\
 ├── backend/
 │   ├── app/
 │   │   ├── main.py              # FastAPI + статика
-│   │   ├── config.py            # Pydantic Settings
+│   │   ├── config.py            # Pydantic Settings (LLM_PROVIDER + оба провайдера)
 │   │   ├── static/index.html    # Web UI
 │   │   ├── routers/             # completion, tests_gen, docs_gen
-│   │   └── services/gemini.py   # OpenRouter клиент (openai SDK)
+│   │   └── services/gemini.py   # LLM клиент: OpenRouter или Ollama (openai SDK)
 │   ├── tests/
 │   │   ├── conftest.py          # env stub для локального запуска
 │   │   └── test_api.py          # 7 тестов
@@ -79,7 +81,6 @@ D:\ai-dev-assistant\
 
 ## Что осталось (опционально)
 
-- [ ] Поддержка Ollama (локальная модель)
 - [ ] Redis кэш ответов
 - [ ] RAG по кодовой базе проекта
 
