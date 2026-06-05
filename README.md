@@ -20,7 +20,7 @@ LSP Server (Python + pygls)
         │ HTTP/REST
 FastAPI Backend (Python)        ←── Web UI (/)
         │
-  Gemini API
+  OpenRouter API
 ```
 
 ## Стек технологий
@@ -28,7 +28,7 @@ FastAPI Backend (Python)        ←── Web UI (/)
 | Компонент | Технологии |
 |-----------|-----------|
 | Backend | Python 3.12, FastAPI, Pydantic V2 |
-| LLM | Google Gemini API (`gemini-2.0-flash`) |
+| LLM | [OpenRouter](https://openrouter.ai) (`google/gemma-4-31b-it:free` по умолчанию) |
 | LSP Server | Python, pygls 1.3.1 |
 | VS Code Extension | TypeScript, vscode-languageclient 9 |
 | Контейнеризация | Docker, Docker Compose |
@@ -61,7 +61,7 @@ cd ai-dev-assistant
 
 # 2. Настроить переменные окружения
 cp .env.example .env
-# Вставить GEMINI_API_KEY в .env  (получить на https://aistudio.google.com)
+# Вставить OPENROUTER_API_KEY в .env  (получить на https://openrouter.ai/keys)
 
 # 3. Запустить через Docker Compose
 docker compose up --build
@@ -95,7 +95,7 @@ npm run compile
 
 ```
 ai-dev-assistant/
-├── backend/            # FastAPI + Gemini API сервис
+├── backend/            # FastAPI + OpenRouter сервис
 ├── lsp_server/         # Language Server (pygls)
 ├── vscode-extension/   # VS Code расширение (TypeScript)
 └── .github/workflows/  # CI/CD pipeline
@@ -106,4 +106,4 @@ ai-dev-assistant/
 - Python 3.12+
 - Node.js 20+
 - Docker & Docker Compose
-- Gemini API ключ ([Google AI Studio](https://aistudio.google.com))
+- OpenRouter API ключ ([openrouter.ai/keys](https://openrouter.ai/keys))
