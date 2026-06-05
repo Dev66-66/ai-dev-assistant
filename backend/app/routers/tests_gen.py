@@ -27,6 +27,15 @@ Code to test:
 Tests:"""
 
 
+def _strip_fences(text: str) -> str:
+    lines = text.strip().splitlines()
+    if lines and lines[0].startswith("```"):
+        lines = lines[1:]
+    if lines and lines[-1].strip() == "```":
+        lines = lines[:-1]
+    return "\n".join(lines).strip()
+
+
 @router.post("/", response_model=TestGenResponse)
 async def generate_tests(req: TestGenRequest) -> TestGenResponse:
     prompt = PROMPT_TEMPLATE.format(language=req.language, framework=req.framework, code=req.code)
@@ -34,4 +43,4 @@ async def generate_tests(req: TestGenRequest) -> TestGenResponse:
         tests = await gemini.generate(prompt)
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
-    return TestGenResponse(tests=tests.strip())
+    return TestGenResponse(tests=_strip_fences(tests))

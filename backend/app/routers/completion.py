@@ -28,6 +28,15 @@ Code so far:
 Continue from where it left off:"""
 
 
+def _strip_fences(text: str) -> str:
+    lines = text.strip().splitlines()
+    if lines and lines[0].startswith("```"):
+        lines = lines[1:]
+    if lines and lines[-1].strip() == "```":
+        lines = lines[:-1]
+    return "\n".join(lines).strip()
+
+
 @router.post("/", response_model=CompletionResponse)
 async def get_completion(req: CompletionRequest):
     prompt = PROMPT_TEMPLATE.format(language=req.language, code=req.code)
@@ -42,4 +51,4 @@ async def get_completion(req: CompletionRequest):
         suggestion = await gemini.generate(prompt)
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
-    return CompletionResponse(suggestion=suggestion.strip())
+    return CompletionResponse(suggestion=_strip_fences(suggestion))
