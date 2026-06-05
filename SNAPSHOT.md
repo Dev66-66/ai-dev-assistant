@@ -21,7 +21,6 @@
 - [x] Поддержка Ollama — локальный запуск моделей, переключение через `LLM_PROVIDER` в `.env`
 - [x] Постобработка ответов LLM — `_strip_fences()` во всех трёх роутерах
 - [x] Оптимизация autocomplete — `qwen2.5-coder:1.5b` + `max_tokens=80` для скорости
-- [x] report_changes.md — перечень правок в отчёте под текущее состояние проекта
 
 ## Исправленные баги CI
 
@@ -86,17 +85,13 @@ D:\ai-dev-assistant\
 │   │   └── commands.ts
 │   ├── package.json
 │   └── tsconfig.json
-└── report/
-    ├── report_fomichev.md        # полный отчёт (gitignored)
-    ├── report_changes.md         # перечень правок в отчёте
-    └── report.docx               # сконвертированный Word (gitignored)
+└── report/                       # локальная папка (gitignored)
 ```
 
 ## Что осталось (опционально)
 
 - [ ] Redis кэш ответов
 - [ ] RAG по кодовой базе проекта
-- [ ] Обновить report_fomichev.md согласно report_changes.md
 
 ## Как возобновить работу
 
