@@ -17,8 +17,10 @@ class DocsGenResponse(BaseModel):
 
 
 PROMPT_TEMPLATE = """\
-You are an expert {language} developer. Write a {style}-style docstring for the following function or class.
-Return ONLY the docstring text itself — no triple quotes, no code fences, no markdown, no explanations.
+You are an expert {language} developer. Write a {style}-style docstring \
+for the following function or class.
+Return ONLY the docstring text itself — no triple quotes, no code fences, \
+no markdown, no explanations.
 
 Example of correct output:
 Adds two numbers.
