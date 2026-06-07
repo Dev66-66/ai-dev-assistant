@@ -1,7 +1,7 @@
 {
   "name": "ai-dev-assistant",
   "displayName": "AI Dev Assistant",
-  "description": "AI-powered code completion, test and doc generation via Gemini",
+  "description": "AI-powered code completion, test and doc generation via OpenRouter or Ollama",
   "version": "0.1.0",
   "engines": { "vscode": "^1.95.0" },
   "categories": ["Other"],
