@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.services import gemini
+from app.services import llm
 
 router = APIRouter(prefix="/tests", tags=["tests"])
 
@@ -40,7 +40,7 @@ def _strip_fences(text: str) -> str:
 async def generate_tests(req: TestGenRequest) -> TestGenResponse:
     prompt = PROMPT_TEMPLATE.format(language=req.language, framework=req.framework, code=req.code)
     try:
-        tests = await gemini.generate(prompt)
+        tests = await llm.generate(prompt)
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
     return TestGenResponse(tests=_strip_fences(tests))

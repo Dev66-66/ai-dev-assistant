@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from app.services import gemini
+from app.services import llm
 
 router = APIRouter(prefix="/docs", tags=["docs"])
 
@@ -50,7 +50,7 @@ def _strip_fences(text: str) -> str:
 async def generate_docs(req: DocsGenRequest) -> DocsGenResponse:
     prompt = PROMPT_TEMPLATE.format(language=req.language, style=req.style, code=req.code)
     try:
-        docstring = await gemini.generate(prompt)
+        docstring = await llm.generate(prompt)
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
     return DocsGenResponse(docstring=_strip_fences(docstring))

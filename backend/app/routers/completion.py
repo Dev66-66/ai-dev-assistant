@@ -3,7 +3,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from app.config import settings
-from app.services import gemini
+from app.services import llm
 
 router = APIRouter(prefix="/completion", tags=["completion"])
 
@@ -46,12 +46,12 @@ async def get_completion(req: CompletionRequest):
 
     if req.stream:
         return StreamingResponse(
-            gemini.generate_stream(prompt),
+            llm.generate_stream(prompt),
             media_type="text/plain",
         )
 
     try:
-        suggestion = await gemini.generate(prompt, max_tokens=80, model=_completion_model)
+        suggestion = await llm.generate(prompt, max_tokens=80, model=_completion_model)
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
     return CompletionResponse(suggestion=_strip_fences(suggestion))

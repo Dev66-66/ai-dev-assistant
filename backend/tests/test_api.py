@@ -7,7 +7,7 @@ from httpx import ASGITransport, AsyncClient
 
 @pytest.fixture
 def mock_generate():
-    with patch("app.services.gemini.generate", new_callable=AsyncMock) as m:
+    with patch("app.services.llm.generate", new_callable=AsyncMock) as m:
         yield m
 
 
