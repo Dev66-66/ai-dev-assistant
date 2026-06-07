@@ -81,3 +81,55 @@ async def test_docs_gen_with_style(mock_generate):
         )
     assert response.status_code == 200
     assert response.json()["docstring"] != ""
+
+
+@pytest.mark.asyncio
+async def test_completion_llm_error():
+    with patch("app.services.llm.generate", new_callable=AsyncMock) as mock_gen:
+        mock_gen.side_effect = RuntimeError("LLM unavailable")
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/completion/",
+                json={"code": "def foo():"},
+            )
+    assert response.status_code == 503
+
+
+@pytest.mark.asyncio
+async def test_tests_gen_llm_error():
+    with patch("app.services.llm.generate", new_callable=AsyncMock) as mock_gen:
+        mock_gen.side_effect = RuntimeError("LLM unavailable")
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/tests/",
+                json={"code": "def foo():"},
+            )
+    assert response.status_code == 503
+
+
+@pytest.mark.asyncio
+async def test_docs_gen_llm_error():
+    with patch("app.services.llm.generate", new_callable=AsyncMock) as mock_gen:
+        mock_gen.side_effect = RuntimeError("LLM unavailable")
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/docs/",
+                json={"code": "def foo():"},
+            )
+    assert response.status_code == 503
+
+
+@pytest.mark.asyncio
+async def test_completion_stream():
+    async def fake_stream(prompt: str):
+        yield "    return "
+        yield "x + y"
+
+    with patch("app.services.llm.generate_stream", new=fake_stream):
+        async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+            response = await client.post(
+                "/completion/",
+                json={"code": "def add(x, y):", "stream": True},
+            )
+    assert response.status_code == 200
+    assert b"return" in response.content

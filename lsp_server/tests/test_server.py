@@ -24,7 +24,7 @@ def completion_params():
 @pytest.mark.asyncio
 async def test_completions_returns_list(mock_ls, completion_params):
     mock_response = MagicMock()
-    mock_response.json = AsyncMock(return_value={"suggestion": "    return x + y"})
+    mock_response.json = MagicMock(return_value={"suggestion": "    return x + y"})
     mock_response.raise_for_status = MagicMock()
 
     with patch("httpx.AsyncClient") as mock_client_cls:
@@ -38,7 +38,8 @@ async def test_completions_returns_list(mock_ls, completion_params):
         result = await completions(mock_ls, completion_params)
 
     assert result is not None
-    assert len(result.items) >= 0
+    assert len(result.items) == 1
+    assert result.items[0].insert_text == "    return x + y"
 
 
 @pytest.mark.asyncio
