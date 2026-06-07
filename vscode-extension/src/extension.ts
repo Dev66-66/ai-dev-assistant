@@ -17,7 +17,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   try {
     await client.start();
     context.subscriptions.push({
-      dispose: () => stopLspClient(client),
+      dispose: () => stopLspClient(),
     });
   } catch {
     vscode.window.showWarningMessage("AI Dev Assistant: LSP server unavailable.");

@@ -38,6 +38,9 @@ export function createLspClient(): LanguageClient {
   return _client;
 }
 
-export async function stopLspClient(client: LanguageClient): Promise<void> {
-  await client.stop();
+export async function stopLspClient(): Promise<void> {
+  if (_client) {
+    await _client.stop();
+    _client = undefined;
+  }
 }
