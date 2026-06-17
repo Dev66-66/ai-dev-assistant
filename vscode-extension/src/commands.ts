@@ -63,8 +63,20 @@ async function generateDocs(): Promise<void> {
       const data = (await resp.json()) as { docstring: string };
       const docstring = `"""\n${data.docstring}\n"""`;
 
-      await editor.edit((eb) => {
-        eb.insert(selection.start, docstring + "\n");
+      const activeEditor = vscode.window.activeTextEditor;
+      if (
+        activeEditor !== editor ||
+        activeEditor.document !== editor.document
+      ) {
+        vscode.window.showWarningMessage(
+          "Active editor changed; docstring was not inserted."
+        );
+        return;
+      }
+
+      const insertPosition = activeEditor.selection.start;
+      await activeEditor.edit((eb) => {
+        eb.insert(insertPosition, docstring + "\n");
       });
     }
   );

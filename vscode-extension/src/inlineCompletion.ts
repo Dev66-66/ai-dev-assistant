@@ -11,9 +11,13 @@ export class AiInlineCompletionProvider implements vscode.InlineCompletionItemPr
     token: vscode.CancellationToken
   ): Promise<vscode.InlineCompletionList | null> {
     const cancelled = await new Promise<boolean>((resolve) => {
-      const timer = setTimeout(() => resolve(false), DEBOUNCE_MS);
-      token.onCancellationRequested(() => {
+      const timer = setTimeout(() => {
+        debounceListener.dispose();
+        resolve(false);
+      }, DEBOUNCE_MS);
+      const debounceListener = token.onCancellationRequested(() => {
         clearTimeout(timer);
+        debounceListener.dispose();
         resolve(true);
       });
     });
@@ -22,10 +26,10 @@ export class AiInlineCompletionProvider implements vscode.InlineCompletionItemPr
       return null;
     }
 
-    try {
-      const controller = new AbortController();
-      token.onCancellationRequested(() => controller.abort());
+    const controller = new AbortController();
+    const abortListener = token.onCancellationRequested(() => controller.abort());
 
+    try {
       const resp = await fetch(`${BACKEND_URL}/completion/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -56,6 +60,8 @@ export class AiInlineCompletionProvider implements vscode.InlineCompletionItemPr
       };
     } catch {
       return null;
+    } finally {
+      abortListener.dispose();
     }
   }
 }
