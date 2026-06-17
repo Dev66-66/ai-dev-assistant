@@ -1,3 +1,4 @@
+import logging
 import os
 
 import httpx
@@ -10,9 +11,15 @@ from lsprotocol.types import (
 )
 from pygls.server import LanguageServer
 
-BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000")
+logger = logging.getLogger(__name__)
+
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 server = LanguageServer("ai-dev-assistant", "v0.1.0")
+
+# Reused across completion requests (called frequently); the process is
+# short-lived so the client is closed on shutdown if pygls exposes a hook.
+_http_client = httpx.AsyncClient(timeout=15.0)
 
 
 def _get_document_text(ls: LanguageServer, uri: str) -> str:
@@ -28,14 +35,17 @@ async def completions(ls: LanguageServer, params: CompletionParams) -> Completio
     language = "python" if uri.endswith(".py") else "unknown"
 
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            resp = await client.post(
-                f"{BACKEND_URL}/completion/",
-                json={"code": text, "language": language, "cursor_line": params.position.line},
-            )
-            resp.raise_for_status()
-            suggestion = resp.json()["suggestion"]
+        resp = await _http_client.post(
+            f"{BACKEND_URL}/completion/",
+            json={"code": text, "language": language, "cursor_line": params.position.line},
+        )
+        resp.raise_for_status()
+        suggestion = resp.json()["suggestion"]
+    except (httpx.HTTPError, httpx.TimeoutException) as exc:
+        logger.warning("Backend completion request failed: %s", exc)
+        return CompletionList(is_incomplete=False, items=[])
     except Exception:
+        logger.exception("Unexpected error while handling completion")
         return CompletionList(is_incomplete=False, items=[])
 
     item = CompletionItem(
@@ -48,6 +58,11 @@ async def completions(ls: LanguageServer, params: CompletionParams) -> Completio
 
 
 if __name__ == "__main__":
+    import asyncio
+
     host = os.getenv("LSP_HOST", "0.0.0.0")  # nosec B104 — container must bind all interfaces
     port = int(os.getenv("LSP_PORT", "2087"))
-    server.start_tcp(host, port)
+    try:
+        server.start_tcp(host, port)
+    finally:
+        asyncio.run(_http_client.aclose())

@@ -1,5 +1,6 @@
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
+import httpx
 import pytest
 from lsprotocol.types import CompletionParams, Position, TextDocumentIdentifier
 
@@ -22,20 +23,16 @@ def completion_params():
 
 
 @pytest.mark.asyncio
-async def test_completions_returns_list(mock_ls, completion_params):
+async def test_completions_returns_list(mock_ls, completion_params, monkeypatch):
     mock_response = MagicMock()
     mock_response.json = MagicMock(return_value={"suggestion": "    return x + y"})
     mock_response.raise_for_status = MagicMock()
 
-    with patch("httpx.AsyncClient") as mock_client_cls:
-        mock_client = AsyncMock()
-        mock_client.post = AsyncMock(return_value=mock_response)
-        mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
-        mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+    import server
 
-        from server import completions
+    monkeypatch.setattr(server._http_client, "post", AsyncMock(return_value=mock_response))
 
-        result = await completions(mock_ls, completion_params)
+    result = await server.completions(mock_ls, completion_params)
 
     assert result is not None
     assert len(result.items) == 1
@@ -43,15 +40,55 @@ async def test_completions_returns_list(mock_ls, completion_params):
 
 
 @pytest.mark.asyncio
-async def test_completions_on_backend_error(mock_ls, completion_params):
-    with patch("httpx.AsyncClient") as mock_client_cls:
-        mock_client = AsyncMock()
-        mock_client.post = AsyncMock(side_effect=Exception("connection refused"))
-        mock_client_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
-        mock_client_cls.return_value.__aexit__ = AsyncMock(return_value=False)
+async def test_completions_on_backend_error(mock_ls, completion_params, monkeypatch):
+    import server
 
-        from server import completions
+    monkeypatch.setattr(
+        server._http_client,
+        "post",
+        AsyncMock(side_effect=httpx.ConnectError("connection refused")),
+    )
 
-        result = await completions(mock_ls, completion_params)
+    result = await server.completions(mock_ls, completion_params)
 
     assert result.items == []
+
+
+@pytest.mark.asyncio
+async def test_completions_sends_python_language(mock_ls, monkeypatch):
+    mock_response = MagicMock()
+    mock_response.json = MagicMock(return_value={"suggestion": "x"})
+    mock_response.raise_for_status = MagicMock()
+
+    import server
+
+    post = AsyncMock(return_value=mock_response)
+    monkeypatch.setattr(server._http_client, "post", post)
+
+    params = CompletionParams(
+        text_document=TextDocumentIdentifier(uri="file:///test.py"),
+        position=Position(line=0, character=0),
+    )
+    await server.completions(mock_ls, params)
+
+    assert post.call_args.kwargs["json"]["language"] == "python"
+
+
+@pytest.mark.asyncio
+async def test_completions_sends_unknown_language(mock_ls, monkeypatch):
+    mock_response = MagicMock()
+    mock_response.json = MagicMock(return_value={"suggestion": "x"})
+    mock_response.raise_for_status = MagicMock()
+
+    import server
+
+    post = AsyncMock(return_value=mock_response)
+    monkeypatch.setattr(server._http_client, "post", post)
+
+    params = CompletionParams(
+        text_document=TextDocumentIdentifier(uri="file:///notes.txt"),
+        position=Position(line=0, character=0),
+    )
+    await server.completions(mock_ls, params)
+
+    assert post.call_args.kwargs["json"]["language"] == "unknown"

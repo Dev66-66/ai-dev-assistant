@@ -15,6 +15,8 @@ services:
     ports:
       - "${LSP_PORT:-2087}:2087"
     env_file: .env
+    environment:
+      BACKEND_URL: http://backend:8000
     restart: unless-stopped
     command: sh -c "while true; do python server.py; sleep 1; done"
     depends_on:
