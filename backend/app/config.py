@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     llm_provider: str = "openrouter"  # "openrouter" or "ollama"
 
     openrouter_api_key: str = ""
-    openrouter_model: str = "google/gemma-4-31b-it:free"
+    openrouter_model: str = "google/gemma-3-27b-it:free"
 
     ollama_base_url: str = "http://host.docker.internal:11434/v1"
     ollama_model: str = "qwen2.5-coder:7b"

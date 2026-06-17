@@ -29,7 +29,7 @@ FastAPI Backend (Python)        ←── Web UI (/)
 | Компонент | Технологии |
 |-----------|-----------|
 | Backend | Python 3.12, FastAPI, Pydantic V2 |
-| LLM (облако) | [OpenRouter](https://openrouter.ai) (`google/gemma-4-31b-it:free` по умолчанию) |
+| LLM (облако) | [OpenRouter](https://openrouter.ai) (`google/gemma-3-27b-it:free` по умолчанию) |
 | LLM (локально) | [Ollama](https://ollama.com) (`qwen2.5-coder:7b` по умолчанию) |
 | LSP Server | Python, pygls 1.3.1 |
 | VS Code Extension | TypeScript, vscode-languageclient 9 |

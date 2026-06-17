@@ -24,7 +24,7 @@ copy .env.example .env
 
 ```
 OPENROUTER_API_KEY=sk-or-v1-твой_ключ_здесь
-OPENROUTER_MODEL=google/gemma-4-31b-it:free
+OPENROUTER_MODEL=google/gemma-3-27b-it:free
 BACKEND_PORT=8000
 LSP_PORT=2087
 ```
@@ -63,7 +63,7 @@ cd D:\ai-dev-assistant\backend
 pip install -r requirements.txt
 
 $env:OPENROUTER_API_KEY="sk-or-v1-твой_ключ"
-$env:OPENROUTER_MODEL="google/gemma-4-31b-it:free"
+$env:OPENROUTER_MODEL="google/gemma-3-27b-it:free"
 
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
