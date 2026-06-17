@@ -1,7 +1,12 @@
+import logging
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.services import llm
+from app.services.text import strip_fences
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/docs", tags=["docs"])
 
@@ -38,21 +43,12 @@ Code:
 Docstring:"""
 
 
-def _strip_fences(text: str) -> str:
-    """Remove markdown code fences if the model wrapped the output."""
-    lines = text.strip().splitlines()
-    if lines and lines[0].startswith("```"):
-        lines = lines[1:]
-    if lines and lines[-1].strip() == "```":
-        lines = lines[:-1]
-    return "\n".join(lines).strip()
-
-
 @router.post("/", response_model=DocsGenResponse)
 async def generate_docs(req: DocsGenRequest) -> DocsGenResponse:
     prompt = PROMPT_TEMPLATE.format(language=req.language, style=req.style, code=req.code)
     try:
         docstring = await llm.generate(prompt)
-    except Exception as e:
-        raise HTTPException(status_code=503, detail=str(e))
-    return DocsGenResponse(docstring=_strip_fences(docstring))
+    except Exception:
+        logger.exception("LLM docstring generation failed")
+        raise HTTPException(status_code=503, detail="LLM service unavailable")
+    return DocsGenResponse(docstring=strip_fences(docstring))

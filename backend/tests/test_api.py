@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from app.main import app
+from app.services.text import strip_fences
 from httpx import ASGITransport, AsyncClient
 
 
@@ -121,7 +122,7 @@ async def test_docs_gen_llm_error():
 
 @pytest.mark.asyncio
 async def test_completion_stream():
-    async def fake_stream(prompt: str):
+    async def fake_stream(prompt: str, model: str | None = None):
         yield "    return "
         yield "x + y"
 
@@ -133,3 +134,25 @@ async def test_completion_stream():
             )
     assert response.status_code == 200
     assert b"return" in response.content
+
+
+def test_strip_fences_plain_text():
+    assert strip_fences("hello world") == "hello world"
+
+
+def test_strip_fences_bare_fence():
+    text = "```\nprint('hi')\n```"
+    assert strip_fences(text) == "print('hi')"
+
+
+def test_strip_fences_language_fence():
+    text = "```python\nprint('hi')\n```"
+    assert strip_fences(text) == "print('hi')"
+
+
+@pytest.mark.parametrize("endpoint", ["/completion/", "/tests/", "/docs/"])
+@pytest.mark.asyncio
+async def test_missing_code_returns_422(endpoint):
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        response = await client.post(endpoint, json={"language": "python"})
+    assert response.status_code == 422

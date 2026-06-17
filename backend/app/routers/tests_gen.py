@@ -1,7 +1,12 @@
+import logging
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.services import llm
+from app.services.text import strip_fences
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/tests", tags=["tests"])
 
@@ -27,20 +32,12 @@ Code to test:
 Tests:"""
 
 
-def _strip_fences(text: str) -> str:
-    lines = text.strip().splitlines()
-    if lines and lines[0].startswith("```"):
-        lines = lines[1:]
-    if lines and lines[-1].strip() == "```":
-        lines = lines[:-1]
-    return "\n".join(lines).strip()
-
-
 @router.post("/", response_model=TestGenResponse)
 async def generate_tests(req: TestGenRequest) -> TestGenResponse:
     prompt = PROMPT_TEMPLATE.format(language=req.language, framework=req.framework, code=req.code)
     try:
         tests = await llm.generate(prompt)
-    except Exception as e:
-        raise HTTPException(status_code=503, detail=str(e))
-    return TestGenResponse(tests=_strip_fences(tests))
+    except Exception:
+        logger.exception("LLM test generation failed")
+        raise HTTPException(status_code=503, detail="LLM service unavailable")
+    return TestGenResponse(tests=strip_fences(tests))

@@ -1,9 +1,14 @@
+import logging
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from app.config import settings
 from app.services import llm
+from app.services.text import strip_fences
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/completion", tags=["completion"])
 
@@ -31,27 +36,29 @@ Code so far:
 Continue from where it left off:"""
 
 
-def _strip_fences(text: str) -> str:
-    lines = text.strip().splitlines()
-    if lines and lines[0].startswith("```"):
-        lines = lines[1:]
-    if lines and lines[-1].strip() == "```":
-        lines = lines[:-1]
-    return "\n".join(lines).strip()
-
-
 @router.post("/", response_model=CompletionResponse)
 async def get_completion(req: CompletionRequest):
     prompt = PROMPT_TEMPLATE.format(language=req.language, code=req.code)
 
     if req.stream:
-        return StreamingResponse(
-            llm.generate_stream(prompt),
-            media_type="text/plain",
-        )
+        try:
+            source = llm.generate_stream(prompt, model=_completion_model)
+        except Exception:
+            logger.exception("LLM streaming completion failed")
+            raise HTTPException(status_code=503, detail="LLM service unavailable")
+
+        async def safe_stream():
+            try:
+                async for chunk in source:
+                    yield chunk
+            except Exception:
+                logger.exception("LLM streaming completion failed during iteration")
+
+        return StreamingResponse(safe_stream(), media_type="text/plain")
 
     try:
         suggestion = await llm.generate(prompt, max_tokens=80, model=_completion_model)
-    except Exception as e:
-        raise HTTPException(status_code=503, detail=str(e))
-    return CompletionResponse(suggestion=_strip_fences(suggestion))
+    except Exception:
+        logger.exception("LLM completion failed")
+        raise HTTPException(status_code=503, detail="LLM service unavailable")
+    return CompletionResponse(suggestion=strip_fences(suggestion))
