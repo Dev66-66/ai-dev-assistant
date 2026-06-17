@@ -36,5 +36,5 @@ TESTS.md
 Thumbs.db
 
 # IDE
-.vscode/settings.json
+.vscode/
 .idea/
